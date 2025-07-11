@@ -7,9 +7,9 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, Train
 MODEL_NAME = 't5-small'
 INPUT_JSON = 'textbook_chunks.json'
 OUTPUT_DIR = './t5_finetuned_on_chunks'
-MAX_INPUT_LENGTH = 512
-MAX_TARGET_LENGTH = 512
-BATCH_SIZE = 4
+MAX_INPUT_LENGTH = 256
+MAX_TARGET_LENGTH = 256
+BATCH_SIZE = 1
 EPOCHS = 2
 
 tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
@@ -62,7 +62,8 @@ def main():
         save_total_limit=2,
         logging_steps=10,
         learning_rate=5e-5,
-        fp16=torch.cuda.is_available(),
+        fp16=False,  # Disable mixed precision
+        gradient_accumulation_steps=4,  # Accumulate gradients to simulate larger batch
         report_to=[],  # disables logging to wandb etc.
     )
 
