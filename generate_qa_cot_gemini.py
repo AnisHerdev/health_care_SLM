@@ -49,10 +49,12 @@ def main():
     with open(INPUT_JSON, "r", encoding="utf-8") as f:
         chunks = json.load(f)
     output = []
-    for i, chunk in enumerate(chunks):
+    # Only process the first 150 chunks for proof of concept
+    chunks_to_process = chunks[:150]
+    for i, chunk in enumerate(chunks_to_process):
         chunk_text = chunk["text"]
         prompt = PROMPT_TEMPLATE.format(chunk=chunk_text)
-        print(f"Processing chunk {i+1}/{len(chunks)}...")
+        print(f"Processing chunk {i+1}/{len(chunks_to_process)}...")
         qa_cot = call_gemini_api(prompt)
         if qa_cot:
             output.append({
@@ -67,8 +69,8 @@ def main():
                 "qa_cot": None
             })
         time.sleep(1)  # avoid hitting rate limits
-        # Optional: Save progress every 100 chunks
-        if (i+1) % 100 == 0:
+        # Optional: Save progress every 50 chunks
+        if (i+1) % 10 == 0:
             with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
                 json.dump(output, f, ensure_ascii=False, indent=2)
     # Final save
